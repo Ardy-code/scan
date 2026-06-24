@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>AR Card Portfolio - Ardya Pratama</title>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.4.2/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.0.0/dist/aframe-extras.min.js"></script>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+    /* LAYAR PETUNJUK SCAN */
+    #scan-overlay {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.85); display: flex; flex-direction: column; 
+      align-items: center; justify-content: center; z-index: 9999; color: white; 
+      text-align: center; transition: opacity 0.5s ease;
+    }
+    .scan-icon { font-size: 50px; margin-bottom: 20px; color: #58a6ff; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
+
+    /* CONTAINER UI AR */
+    #ar-ui {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none; z-index: 1000; opacity: 0; visibility: hidden;
+      transition: opacity 0.5s ease, visibility 0.5s;
+    }
+    #ar-ui.show { opacity: 1; visibility: visible; }
+
+    /* DESAIN KARTU UMUM */
+    .card {
+      position: absolute; left: 50%; transform: translateX(-50%);
+      width: 90%; max-width: 420px;
+      background: rgba(20, 20, 20, 0.75);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-radius: 18px; padding: 18px; color: white;
+      display: flex; align-items: flex-start;
+      gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      pointer-events: auto;
+    }
+    
+    /* CLASS PENTING UNTUK FOTO AGAR TIDAK KEBESARAN */
+    .profile-pic { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
+    
+    /* KARTU ATAS */
+    .top-card { top: 25px; border: 1px solid rgba(88, 166, 255, 0.4); border-top: 2px solid #58a6ff; }
+    .top-card .profile-pic { border: 2px solid #58a6ff; }
+    
+    .card-content-scroll { text-align: left; flex: 1; max-height: 38vh; overflow-y: auto; padding-right: 10px; }
+    .card-content-scroll::-webkit-scrollbar { width: 4px; }
+    .card-content-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+    .card-content-scroll::-webkit-scrollbar-thumb { background: #58a6ff; border-radius: 10px; }
+
+    .top-card h1 { margin: 0 0 5px 0; font-size: 18px; color: #58a6ff; text-transform: uppercase; letter-spacing: 1px; }
+    .section-title { font-size: 13px; color: #fff; font-weight: bold; margin: 12px 0 4px 0; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.9; }
+    .desc-text { margin: 0; font-size: 12px; color: #ccc; line-height: 1.6; text-align: justify; }
+    .divider { height: 1px; background: linear-gradient(90deg, rgba(88,166,255,0.5) 0%, rgba(255,255,255,0) 100%); margin: 12px 0; }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .skill-tags span { background: rgba(88, 166, 255, 0.15); border: 1px solid rgba(88, 166, 255, 0.4); color: #c9e1ff; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+    .contact-info { font-size: 12px; color: #ccc; display: flex; flex-direction: column; gap: 6px; }
+    .contact-info div { display: flex; align-items: center; gap: 8px; }
+    .contact-info i { color: #58a6ff; font-size: 14px; width: 16px; text-align: center; }
+
+    /* KARTU BAWAH */
+    .bottom-card { bottom: 30px; border: 1px solid rgba(255, 152, 0, 0.4); border-top: 2px solid #ff9800; align-items: center; }
+    .bottom-card .card-content { text-align: left; flex: 1; }
+    .bottom-card .profile-pic { border: 2px solid #ff9800; }
+    .bottom-card h2 { margin: 0 0 5px 0; font-size: 19px; color: #ff9800; }
+    .bottom-card p { margin: 2px 0; font-size: 13px; color: #ddd; }
+    
+    .action-area { margin-top: 12px; display: flex; flex-direction: column; gap: 12px; }
+    .btn-portfolio { background: linear-gradient(135deg, #ff9800, #ffb74d); color: #000; text-decoration: none; padding: 9px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 13px; box-shadow: 0 4px 10px rgba(255, 152, 0, 0.3); transition: transform 0.2s, box-shadow 0.2s; }
+    .btn-portfolio:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(255, 152, 0, 0.5); }
+    .social-icons { display: flex; gap: 15px; justify-content: flex-start; font-size: 20px; }
+    .social-icons a { color: #bbb; transition: color 0.3s, transform 0.3s; }
+    .social-icons a:hover { color: #ff9800; transform: translateY(-3px); }
+  </style>
+</head>
+<body>
+
+  <div id="scan-overlay">
+    <i class="fa-solid fa-expand scan-icon"></i>
+    <h2>Mencari Kartu Nama...</h2>
+    <p style="color: #aaa; font-size: 14px; max-width: 80%;">Arahkan kamera ke gambar marker pada kartu nama untuk memunculkan portofolio AR.</p>
+  </div>
+
+  <div id="ar-ui">
+    
+    <div class="card top-card">
+      <img src="asset/profile.png" class="profile-pic" alt="Foto">
+      <div class="card-content-scroll">
+        <h1>Profil Profesional</h1>
+        <p class="desc-text">Mahasiswa D4 Teknologi Rekayasa Perangkat Lunak (TRPL) yang antusias dalam eksplorasi teknologi <i>Augmented Reality</i> dan pengembangan web.</p>
+        <div class="divider"></div>
+        <div class="section-title">Fokus Eksplorasi</div>
+        <p class="desc-text">Memiliki ketertarikan mendalam pada desain antarmuka, Game Developer, <i>prompt</i> sistem untuk menghasilkan pengalaman digital yang modern dan imersif.</p>
+        <div class="divider"></div>
+        <div class="section-title">Technical Skills</div>
+        <div class="skill-tags">
+          <span>Web Development</span><span>AR.js / WebXR</span><span>Node Js</span><span>UI/UX Design</span><span>React</span>
+        </div>
+        <div class="divider"></div>
+        <div class="section-title">Kontak & Info</div>
+        <div class="contact-info">
+          <div><i class="fa-solid fa-envelope"></i> ardy9948@gmail.com</div>
+          <div><i class="fa-solid fa-location-dot"></i> Medan, Indonesia</div>
+          <div><i class="fa-brands fa-whatsapp"></i> +62 813-6259-8931</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card bottom-card">
+      <img src="asset/profile.png" class="profile-pic" alt="Foto Ardya">
+      <div class="card-content">
+        <h2>Ardya Pratama Putra</h2>
+        <p><strong>NIM:</strong> 2305010038</p>
+        <p style="color: #ff9800; font-weight: bold; margin-top: 4px;">D4 TRPL - Politeknik WBI</p>
+        
+        <div class="action-area">
+          <a href="#" class="btn-portfolio" target="_blank">
+            <i class="fa-solid fa-rocket"></i> Eksplorasi Portofolio
+          </a>
+          <div class="social-icons">
+            <a href="#" title="GitHub"><i class="fa-brands fa-github"></i></a>
+            <a href="#" title="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+            <a href="mailto:ardy9948@gmail.com" title="Gmail"><i class="fa-solid fa-envelope"></i></a>
+            <a href="#" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1;">
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" vr-mode-ui="enabled: false" renderer="logarithmicDepthBuffer: true; antialias: true;">
+      
+      <a-assets>
+        <img id="gambarKanan" src="asset/portfolio.png">
+      </a-assets>
+
+      <a-marker type="pattern" url="asset/marker.patt" id="marker-kartu">
+        
+        <a-gltf-model src="asset/avatar.glb" position="-1.5 0 0" rotation="-90 0 0" scale="0.5 0.5 0.5" animation-mixer="loop: repeat"></a-gltf-model>
+
+        <a-image src="asset/gamba.png" position="1.5 0 0" rotation="-90 0 0" scale="1.5 2 0"></a-image>
+        
+      </a-marker>
+
+      <a-entity camera></a-entity>
+    </a-scene>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const scanOverlay = document.getElementById('scan-overlay');
+      const arUi = document.getElementById('ar-ui');
+
+      document.querySelector('a-scene').addEventListener('loaded', () => {
+        const marker = document.getElementById('marker-kartu');
+        if (!marker) return;
+
+        marker.addEventListener('markerFound', () => {
+          scanOverlay.style.opacity = '0'; 
+          setTimeout(() => scanOverlay.style.display = 'none', 500); 
+          arUi.classList.add('show'); 
+        });
+
+        marker.addEventListener('markerLost', () => {
+          scanOverlay.style.display = 'flex'; 
+          setTimeout(() => scanOverlay.style.opacity = '1', 50); 
+          arUi.classList.remove('show'); 
+        });
+      });
+    });
+  </script>
+</body>
+</html>
