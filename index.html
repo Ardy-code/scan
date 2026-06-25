@@ -32,7 +32,7 @@
     }
     #ar-ui.show { opacity: 1; visibility: visible; }
 
-    /* DESAIN KARTU UMUM (Base Desktop/Tablet) */
+    /* DESAIN KARTU UMUM (Base Laptop/Tablet) */
     .card {
       position: absolute; left: 50%; transform: translateX(-50%);
       width: 90%; max-width: 420px;
@@ -80,36 +80,41 @@
     .social-icons a:hover { color: #ff9800; transform: translateY(-3px); }
 
     /* =======================================================
-       MEDIA QUERIES UNTUK SMARTPHONE (RESPONSIVE DESIGN) 
-       Semua ukuran dikecilkan agar area tengah lega
+       MEDIA QUERIES KHUSUS SMARTPHONE (PENYUSUTAN AGRESIF)
        ======================================================= */
     @media (max-width: 600px) {
       .card { padding: 12px; gap: 10px; width: 92%; border-radius: 12px; }
       
-      /* Perkecil Foto Profil */
-      .profile-pic { width: 50px; height: 50px; }
+      /* Foto Dikecilkan */
+      .profile-pic { width: 45px; height: 45px; }
       
-      /* Atur jarak layar agar tidak memotong ujung HP */
-      .top-card { top: 15px; }
-      .bottom-card { bottom: 15px; }
+      /* Kartu ditarik mentok ke atas dan bawah layar */
+      .top-card { top: 10px; }
+      .bottom-card { bottom: 10px; }
       
-      /* Batasi batas scroll agar tidak memakan layar tengah */
-      .card-content-scroll { max-height: 25vh; }
+      /* BATAS SCROLL DITEKAN DRASTIS AGAR TENGAH LEGA */
+      .card-content-scroll { max-height: 20vh; }
       
-      /* Perkecil ukuran Teks */
-      .top-card h1 { font-size: 15px; }
-      .bottom-card h2 { font-size: 16px; }
-      .desc-text { font-size: 11px; line-height: 1.4; }
-      .bottom-card p { font-size: 11px; margin: 1px 0; }
-      .section-title { font-size: 11px; margin: 8px 0 2px 0; }
-      .divider { margin: 8px 0; }
-      .skill-tags span { font-size: 10px; padding: 3px 6px; }
-      .contact-info { font-size: 11px; gap: 4px; }
+      /* Teks Dikecilkan */
+      .top-card h1 { font-size: 14px; }
+      .bottom-card h2 { font-size: 15px; margin-bottom: 2px; }
+      .desc-text { font-size: 10px; line-height: 1.4; }
+      .bottom-card p { font-size: 10px; margin: 1px 0; }
+      .section-title { font-size: 10px; margin: 8px 0 2px 0; }
+      .divider { margin: 6px 0; }
+      .skill-tags span { font-size: 9px; padding: 2px 5px; }
+      .contact-info { font-size: 10px; gap: 4px; }
       
-      /* Rapatkan area tombol dan sosmed agar tidak terpotong */
-      .action-area { margin-top: 8px; gap: 8px; }
-      .btn-portfolio { padding: 7px; font-size: 12px; }
-      .social-icons { font-size: 18px; gap: 12px; }
+      /* TRIK MENGHEMAT RUANG: Tombol dan Ikon disejajarkan (Kiri-Kanan) */
+      .action-area { 
+        margin-top: 8px; 
+        flex-direction: row; /* Berubah jadi menyamping */
+        align-items: center; 
+        justify-content: space-between; 
+        gap: 10px;
+      }
+      .btn-portfolio { padding: 6px 10px; font-size: 10px; flex: 1; margin: 0; }
+      .social-icons { font-size: 16px; gap: 10px; }
     }
   </style>
 </head>
@@ -158,10 +163,10 @@
             <i class="fa-solid fa-rocket"></i> Eksplorasi Portofolio
           </a>
           <div class="social-icons">
-            <a href="https://github.com/Ardy-code" title="GitHub"><i class="fa-brands fa-github"></i></a>
-            <a href="https://www.linkedin.com/in/ardya-pratama-putra-putra-701722419/" title="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+            <a href="#" title="GitHub"><i class="fa-brands fa-github"></i></a>
+            <a href="#" title="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
             <a href="mailto:ardy9948@gmail.com" title="Gmail"><i class="fa-solid fa-envelope"></i></a>
-            <a href="https://www.youtube.com/@aroy2110" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+            <a href="#" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
           </div>
         </div>
       </div>
@@ -171,10 +176,10 @@
 
   <div style="position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1;">
     <a-scene 
-  embedded 
-  arjs="sourceType: webcam; debugUIEnabled: false; sourceWidth:1280; sourceHeight:960; displayWidth: 1280; displayHeight: 960;" 
-  vr-mode-ui="enabled: false" 
-  renderer="logarithmicDepthBuffer: true; antialias: true; colorManagement: true;">
+      embedded 
+      arjs="sourceType: webcam; debugUIEnabled: false; sourceWidth:1280; sourceHeight:960; displayWidth: 1280; displayHeight: 960;" 
+      vr-mode-ui="enabled: false" 
+      renderer="logarithmicDepthBuffer: true; antialias: true; colorManagement: true;">
       
       <a-assets>
         <img id="gambarKanan" src="asset/gamba.png">
@@ -183,13 +188,8 @@
       <a-marker type="pattern" url="asset/marker.patt" id="marker-kartu">
         
         <a-gltf-model src="asset/avatar.glb" position="-1.5 0 0" rotation="-90 0 0" scale="0.5 0.5 0.5" animation-mixer="loop: repeat"></a-gltf-model>
-<a-image 
-  src="asset/gamba.png" 
-  position="1.5 0 0" 
-  rotation="-90 0 0" 
-  scale="1.5 1 1"
-  material="shader: flat; npot: true;">
-</a-image>
+
+        <a-image src="#gambarKanan" position="1.5 0 0" rotation="-90 0 0" scale="1.5 1 1" material="shader: flat; npot: true;"></a-image>
         
       </a-marker>
 
