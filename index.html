@@ -32,7 +32,7 @@
     }
     #ar-ui.show { opacity: 1; visibility: visible; }
 
-    /* DESAIN KARTU UMUM */
+    /* DESAIN KARTU UMUM (Base Desktop/Tablet) */
     .card {
       position: absolute; left: 50%; transform: translateX(-50%);
       width: 90%; max-width: 420px;
@@ -44,14 +44,13 @@
       pointer-events: auto;
     }
     
-    /* CLASS PENTING UNTUK FOTO AGAR TIDAK KEBESARAN */
     .profile-pic { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
     
     /* KARTU ATAS */
     .top-card { top: 25px; border: 1px solid rgba(88, 166, 255, 0.4); border-top: 2px solid #58a6ff; }
     .top-card .profile-pic { border: 2px solid #58a6ff; }
     
-    .card-content-scroll { text-align: left; flex: 1; max-height: 38vh; overflow-y: auto; padding-right: 10px; }
+    .card-content-scroll { text-align: left; flex: 1; max-height: 35vh; overflow-y: auto; padding-right: 10px; }
     .card-content-scroll::-webkit-scrollbar { width: 4px; }
     .card-content-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
     .card-content-scroll::-webkit-scrollbar-thumb { background: #58a6ff; border-radius: 10px; }
@@ -79,6 +78,39 @@
     .social-icons { display: flex; gap: 15px; justify-content: flex-start; font-size: 20px; }
     .social-icons a { color: #bbb; transition: color 0.3s, transform 0.3s; }
     .social-icons a:hover { color: #ff9800; transform: translateY(-3px); }
+
+    /* =======================================================
+       MEDIA QUERIES UNTUK SMARTPHONE (RESPONSIVE DESIGN) 
+       Semua ukuran dikecilkan agar area tengah lega
+       ======================================================= */
+    @media (max-width: 600px) {
+      .card { padding: 12px; gap: 10px; width: 92%; border-radius: 12px; }
+      
+      /* Perkecil Foto Profil */
+      .profile-pic { width: 50px; height: 50px; }
+      
+      /* Atur jarak layar agar tidak memotong ujung HP */
+      .top-card { top: 15px; }
+      .bottom-card { bottom: 15px; }
+      
+      /* Batasi batas scroll agar tidak memakan layar tengah */
+      .card-content-scroll { max-height: 25vh; }
+      
+      /* Perkecil ukuran Teks */
+      .top-card h1 { font-size: 15px; }
+      .bottom-card h2 { font-size: 16px; }
+      .desc-text { font-size: 11px; line-height: 1.4; }
+      .bottom-card p { font-size: 11px; margin: 1px 0; }
+      .section-title { font-size: 11px; margin: 8px 0 2px 0; }
+      .divider { margin: 8px 0; }
+      .skill-tags span { font-size: 10px; padding: 3px 6px; }
+      .contact-info { font-size: 11px; gap: 4px; }
+      
+      /* Rapatkan area tombol dan sosmed agar tidak terpotong */
+      .action-area { margin-top: 8px; gap: 8px; }
+      .btn-portfolio { padding: 7px; font-size: 12px; }
+      .social-icons { font-size: 18px; gap: 12px; }
+    }
   </style>
 </head>
 <body>
@@ -126,10 +158,10 @@
             <i class="fa-solid fa-rocket"></i> Eksplorasi Portofolio
           </a>
           <div class="social-icons">
-            <a href="#" title="GitHub"><i class="fa-brands fa-github"></i></a>
-            <a href="#" title="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+            <a href="https://github.com/Ardy-code" title="GitHub"><i class="fa-brands fa-github"></i></a>
+            <a href="https://www.linkedin.com/in/ardya-pratama-putra-putra-701722419/" title="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
             <a href="mailto:ardy9948@gmail.com" title="Gmail"><i class="fa-solid fa-envelope"></i></a>
-            <a href="#" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+            <a href="https://www.youtube.com/@aroy2110" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
           </div>
         </div>
       </div>
@@ -138,17 +170,26 @@
   </div>
 
   <div style="position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1;">
-    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" vr-mode-ui="enabled: false" renderer="logarithmicDepthBuffer: true; antialias: true;">
+    <a-scene 
+  embedded 
+  arjs="sourceType: webcam; debugUIEnabled: false; sourceWidth:1280; sourceHeight:960; displayWidth: 1280; displayHeight: 960;" 
+  vr-mode-ui="enabled: false" 
+  renderer="logarithmicDepthBuffer: true; antialias: true; colorManagement: true;">
       
       <a-assets>
-        <img id="gambarKanan" src="asset/portfolio.png">
+        <img id="gambarKanan" src="asset/gamba.png">
       </a-assets>
 
       <a-marker type="pattern" url="asset/marker.patt" id="marker-kartu">
         
         <a-gltf-model src="asset/avatar.glb" position="-1.5 0 0" rotation="-90 0 0" scale="0.5 0.5 0.5" animation-mixer="loop: repeat"></a-gltf-model>
-
-        <a-image src="asset/gamba.png" position="1.5 0 0" rotation="-90 0 0" scale="1.5 2 0"></a-image>
+<a-image 
+  src="asset/gamba.png" 
+  position="1.5 0 0" 
+  rotation="-90 0 0" 
+  scale="1.5 1 1"
+  material="shader: flat; npot: true;">
+</a-image>
         
       </a-marker>
 
